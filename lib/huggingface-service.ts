@@ -35,53 +35,53 @@ const MODELS = {
 
 // Medical-specific prompts for different image types
 const MEDICAL_PROMPTS = {
-  mri: `As a medical AI expert, analyze this MRI scan and provide a patient-friendly interpretation:
+  mri: `As a medical AI expert, analyze this MRI scan and provide a clear, patient-friendly interpretation. Focus on the following key points:
 
-1. What We Found:
-   - Any visible abnormalities or normal findings
-   - The general condition of the scanned area
-   - Whether the findings appear normal or need attention
+  1. **Findings:**
+     - Describe any visible abnormalities or normal findings.
+     - Summarize the general condition of the scanned area.
+     - Indicate whether the findings appear normal or require further attention.
 
-2. What You Should Know:
-   - Key points to discuss with your doctor
-   - Questions to ask about the findings
-   - Any lifestyle considerations
+  2. **Patient Guidance:**
+     - Highlight key points to discuss with the doctor.
+     - Suggest relevant questions to ask about the findings.
+     - Mention any lifestyle considerations based on the results.
 
-3. Next Steps:
-   - Recommended follow-up actions
-   - When to see your doctor
-   - Any immediate concerns to address
+  3. **Next Steps:**
+     - Recommend appropriate follow-up actions.
+     - Advise when to see the doctor next.
+     - Note any immediate concerns that need addressing.
 
-4. Important Notes:
-   - Warning signs to watch for
-   - When to seek immediate care
-   - General health recommendations
+  4. **Important Notes:**
+     - List warning signs to watch for.
+     - Specify when to seek immediate medical care.
+     - Provide general health recommendations.
 
-Please use clear, simple language and focus on what the patient needs to know.`,
+  Use clear, simple language and maintain a professional yet empathetic tone. If applicable, include specific medical terminology to enhance accuracy.`,
+  
+  xray: `As a medical AI expert, analyze this X-ray scan and provide a clear, patient-friendly interpretation. Focus on the following key points:
 
-  xray: `As a medical AI expert, analyze this X-ray image and provide a patient-friendly interpretation:
+  1. **Findings:**
+     - Describe any visible abnormalities or normal findings.
+     - Summarize the general condition of the scanned area.
+     - Indicate whether the findings appear normal or require further attention.
 
-1. What We Found:
-   - Any visible abnormalities or normal findings
-   - The general condition of the scanned area
-   - Whether the findings appear normal or need attention
+  2. **Patient Guidance:**
+     - Highlight key points to discuss with the doctor.
+     - Suggest relevant questions to ask about the findings.
+     - Mention any lifestyle considerations based on the results.
 
-2. What You Should Know:
-   - Key points to discuss with your doctor
-   - Questions to ask about the findings
-   - Any lifestyle considerations
+  3. **Next Steps:**
+     - Recommend appropriate follow-up actions.
+     - Advise when to see the doctor next.
+     - Note any immediate concerns that need addressing.
 
-3. Next Steps:
-   - Recommended follow-up actions
-   - When to see your doctor
-   - Any immediate concerns to address
+  4. **Important Notes:**
+     - List warning signs to watch for.
+     - Specify when to seek immediate medical care.
+     - Provide general health recommendations.
 
-4. Important Notes:
-   - Warning signs to watch for
-   - When to seek immediate care
-   - General health recommendations
-
-Please use clear, simple language and focus on what the patient needs to know.`
+  Use clear, simple language and maintain a professional yet empathetic tone. If applicable, include specific medical terminology to enhance accuracy.`
 };
 
 export async function analyzeMedicalImage(
@@ -92,6 +92,7 @@ export async function analyzeMedicalImage(
     // Process image with sharp
     const processedImage = await sharp(imageBuffer)
       .resize(224, 224)
+      .normalize() // Normalize pixel values
       .toFormat('jpeg')
       .toBuffer();
 
@@ -159,7 +160,7 @@ async function getGroqAnalysis(initialAnalysis: string, type: 'mri' | 'xray'): P
       model: "llama-3.3-70b-versatile",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 700,
     });
 
     const response = completion.choices[0]?.message?.content || '';
